@@ -1,200 +1,362 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Code Updater</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<title>AI Code Updater</title>
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f7fb;
-      color: #172033;
-    }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    header {
-      background: #111827;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #f5f7fb;
+  color: #172033;
+}
 
-    header h1 {
-      margin: 0 0 8px;
-      font-size: 28px;
-    }
+header {
+  background: #111827;
+  color: white;
+  padding: 28px 20px;
+  text-align: center;
+}
 
-    header p {
-      margin: 0;
-      color: #cbd5e1;
-    }
+header h1 {
+  margin: 0 0 8px;
+  font-size: 30px;
+}
 
-    main {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 0 20px;
-    }
+header p {
+  margin: 0;
+  color: #cbd5e1;
+}
 
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 25px;
-      margin-bottom: 25px;
-      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
-    }
+main {
+  max-width: 1000px;
+  margin: 30px auto;
+  padding: 0 18px;
+}
 
-    .card h2 {
-      margin-top: 0;
-    }
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 22px;
+  box-shadow: 0 4px 18px rgba(0,0,0,0.07);
+}
 
-    textarea {
-      width: 100%;
-      min-height: 150px;
-      padding: 15px;
-      border: 1px solid #d1d5db;
-      border-radius: 10px;
-      font-size: 16px;
-      resize: vertical;
-    }
+.card h2 {
+  margin-top: 0;
+}
 
-    button {
-      margin-top: 15px;
-      padding: 12px 22px;
-      border: none;
-      border-radius: 8px;
-      background: #2563eb;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-    }
+textarea {
+  width: 100%;
+  min-height: 150px;
+  padding: 15px;
+  border: 1px solid #d1d5db;
+  border-radius: 10px;
+  font-size: 16px;
+  resize: vertical;
+}
 
-    button:hover {
-      background: #1d4ed8;
-    }
+button {
+  margin-top: 15px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 9px;
+  background: #2563eb;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+}
 
-    .steps {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 12px;
-    }
+button:hover {
+  background: #1d4ed8;
+}
 
-    .step {
-      padding: 15px;
-      border-radius: 10px;
-      background: #eef2ff;
-      text-align: center;
-      font-size: 14px;
-    }
+.secondary {
+  background: #64748b;
+}
 
-    .step strong {
-      display: block;
-      margin-bottom: 6px;
-    }
+.success {
+  background: #16a34a;
+}
 
-    .status {
-      padding: 15px;
-      background: #f0fdf4;
-      border-radius: 10px;
-      margin-top: 20px;
-      display: none;
-    }
+.danger {
+  background: #dc2626;
+}
 
-    @media (max-width: 700px) {
-      .steps {
-        grid-template-columns: 1fr;
-      }
+.steps {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px;
+}
 
-      main {
-        margin-top: 20px;
-      }
-    }
-  </style>
+.step {
+  padding: 15px 10px;
+  border-radius: 10px;
+  background: #eef2ff;
+  text-align: center;
+  font-size: 14px;
+}
+
+.step.active {
+  background: #dbeafe;
+  border: 2px solid #2563eb;
+}
+
+.step strong {
+  display: block;
+  margin-bottom: 6px;
+}
+
+.result {
+  display: none;
+}
+
+.file-box {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 15px;
+  margin-top: 15px;
+}
+
+.code-box {
+  background: #111827;
+  color: #e5e7eb;
+  padding: 18px;
+  border-radius: 10px;
+  overflow-x: auto;
+  font-family: monospace;
+  font-size: 14px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.highlight {
+  background: #374151;
+  border-left: 4px solid #60a5fa;
+  padding: 8px;
+  display: block;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.badge {
+  display: inline-block;
+  background: #dcfce7;
+  color: #166534;
+  padding: 6px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.notice {
+  background: #eff6ff;
+  border-left: 4px solid #2563eb;
+  padding: 12px;
+  margin-top: 15px;
+  border-radius: 6px;
+}
+
+@media (max-width: 700px) {
+  .steps {
+    grid-template-columns: 1fr;
+  }
+
+  main {
+    margin-top: 18px;
+  }
+
+  .actions button {
+    width: 100%;
+  }
+}
+</style>
 </head>
 
 <body>
 
-  <header>
-    <h1>AI Code Updater</h1>
-    <p>Find, review, and safely update your code with AI.</p>
-  </header>
+<header>
+  <h1>AI Code Updater</h1>
+  <p>Find, review, and safely update your code with AI.</p>
+</header>
 
-  <main>
+<main>
 
-    <div class="card">
-      <h2>AI Coding Instruction</h2>
+  <div class="card">
+    <h2>AI Coding Instruction</h2>
 
-      <p>
-        Paste the instruction you received from your AI coding assistant.
-      </p>
+    <p>
+      Paste the coding instruction you received from your AI assistant.
+    </p>
 
-      <textarea
-        id="instruction"
-        placeholder="Example: Find the Identity Overview section and update the dashboard card."
-      ></textarea>
+    <textarea
+      id="instruction"
+      placeholder="Example: Find the dashboard welcome message and change it to 'Welcome to IdentityAI'."
+    ></textarea>
 
-      <button onclick="findCode()">Find Code</button>
+    <button onclick="findCode()">🔎 Find Code</button>
 
-      <div class="status" id="status">
-        🔎 Searching your codebase...
+    <div class="notice">
+      <strong>Demo Mode:</strong>
+      Code search and GitHub updates will be connected in the next development stage.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>How AI Code Updater Works</h2>
+
+    <div class="steps">
+
+      <div class="step active" id="step1">
+        <strong>1. Understand</strong>
+        AI reads the instruction.
       </div>
+
+      <div class="step" id="step2">
+        <strong>2. Locate</strong>
+        Finds the relevant code.
+      </div>
+
+      <div class="step" id="step3">
+        <strong>3. Highlight</strong>
+        Shows the exact location.
+      </div>
+
+      <div class="step" id="step4">
+        <strong>4. Review</strong>
+        You check the change.
+      </div>
+
+      <div class="step" id="step5">
+        <strong>5. Update</strong>
+        You approve the update.
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card result" id="result">
+
+    <h2>📍 Code Location Found</h2>
+
+    <span class="badge">Match Found</span>
+
+    <div class="file-box">
+      <strong>File:</strong> index.html<br>
+      <strong>Location:</strong> Relevant code section
     </div>
 
-    <div class="card">
-      <h2>How AI Code Updater Works</h2>
+    <h3>Highlighted Code</h3>
 
-      <div class="steps">
-
-        <div class="step">
-          <strong>1. Understand</strong>
-          AI reads the instruction.
-        </div>
-
-        <div class="step">
-          <strong>2. Locate</strong>
-          Finds the relevant code.
-        </div>
-
-        <div class="step">
-          <strong>3. Highlight</strong>
-          Takes you to the exact location.
-        </div>
-
-        <div class="step">
-          <strong>4. Review</strong>
-          You check the proposed change.
-        </div>
-
-        <div class="step">
-          <strong>5. Update</strong>
-          You approve the update.
-        </div>
-
-      </div>
+    <div class="code-box">
+<span>&lt;h1&gt;AI Code Updater&lt;/h1&gt;</span>
+<span class="highlight">
+&lt;p&gt;Find, review, and safely update your code with AI.&lt;/p&gt;
+</span>
     </div>
 
-  </main>
+    <h3>Proposed Update</h3>
 
-  <script>
-    function findCode() {
-      const instruction = document.getElementById("instruction").value;
-      const status = document.getElementById("status");
+    <div class="code-box">
+Before:
+Find, review, and safely update your code with AI.
 
-      if (instruction.trim() === "") {
-        status.style.display = "block";
-        status.innerHTML = "⚠️ Please paste an AI coding instruction first.";
-        return;
-      }
+After:
+Find, understand, review, and safely update your code with AI.
+    </div>
 
-      status.style.display = "block";
-      status.innerHTML =
-        "🔎 AI Code Updater received your instruction. Code search will be connected in the next stage.";
-    }
-  </script>
+    <div class="actions">
+
+      <button class="success" onclick="approveUpdate()">
+        ✅ Approve & Update
+      </button>
+
+      <button class="secondary" onclick="cancelUpdate()">
+        ↩ Cancel
+      </button>
+
+    </div>
+
+    <div id="updateStatus"></div>
+
+  </div>
+
+</main>
+
+<script>
+
+function findCode() {
+
+  const instruction =
+    document.getElementById("instruction").value.trim();
+
+  const result =
+    document.getElementById("result");
+
+  if (instruction === "") {
+    alert("Please paste an AI coding instruction first.");
+    return;
+  }
+
+  document.getElementById("step1").classList.remove("active");
+  document.getElementById("step2").classList.add("active");
+
+  setTimeout(function() {
+
+    document.getElementById("step2").classList.remove("active");
+    document.getElementById("step3").classList.add("active");
+
+    result.style.display = "block";
+
+    result.scrollIntoView({
+      behavior: "smooth"
+    });
+
+  }, 600);
+}
+
+function approveUpdate() {
+
+  const status =
+    document.getElementById("updateStatus");
+
+  document.getElementById("step3").classList.remove("active");
+  document.getElementById("step4").classList.add("active");
+
+  status.innerHTML =
+    "<div class='notice'>✅ Update approved in demo mode. Real GitHub code updating will be connected next.</div>";
+
+  setTimeout(function() {
+
+    document.getElementById("step4").classList.remove("active");
+    document.getElementById("step5").classList.add("active");
+
+  }, 800);
+}
+
+function cancelUpdate() {
+
+  document.getElementById("result").style.display = "none";
+
+  document.getElementById("step3").classList.remove("active");
+  document.getElementById("step4").classList.remove("active");
+  document.getElementById("step5").classList.remove("active");
+  document.getElementById("step1").classList.add("active");
+}
+
+</script>
 
 </body>
 </html>
