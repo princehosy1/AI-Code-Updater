@@ -4,14 +4,197 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AI Code Updater</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f7fb;
+      color: #172033;
+    }
+
+    header {
+      background: #111827;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+
+    header p {
+      margin: 0;
+      color: #cbd5e1;
+    }
+
+    main {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+    }
+
+    .card h2 {
+      margin-top: 0;
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 150px;
+      padding: 15px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      font-size: 16px;
+      resize: vertical;
+    }
+
+    button {
+      margin-top: 15px;
+      padding: 12px 22px;
+      border: none;
+      border-radius: 8px;
+      background: #2563eb;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #1d4ed8;
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+    }
+
+    .step {
+      padding: 15px;
+      border-radius: 10px;
+      background: #eef2ff;
+      text-align: center;
+      font-size: 14px;
+    }
+
+    .step strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .status {
+      padding: 15px;
+      background: #f0fdf4;
+      border-radius: 10px;
+      margin-top: 20px;
+      display: none;
+    }
+
+    @media (max-width: 700px) {
+      .steps {
+        grid-template-columns: 1fr;
+      }
+
+      main {
+        margin-top: 20px;
+      }
+    }
+  </style>
 </head>
+
 <body>
 
-  <h1>AI Code Updater</h1>
+  <header>
+    <h1>AI Code Updater</h1>
+    <p>Find, review, and safely update your code with AI.</p>
+  </header>
 
-  <p>
-    Find, review, and update your code with AI.
-  </p>
+  <main>
+
+    <div class="card">
+      <h2>AI Coding Instruction</h2>
+
+      <p>
+        Paste the instruction you received from your AI coding assistant.
+      </p>
+
+      <textarea
+        id="instruction"
+        placeholder="Example: Find the Identity Overview section and update the dashboard card."
+      ></textarea>
+
+      <button onclick="findCode()">Find Code</button>
+
+      <div class="status" id="status">
+        🔎 Searching your codebase...
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>How AI Code Updater Works</h2>
+
+      <div class="steps">
+
+        <div class="step">
+          <strong>1. Understand</strong>
+          AI reads the instruction.
+        </div>
+
+        <div class="step">
+          <strong>2. Locate</strong>
+          Finds the relevant code.
+        </div>
+
+        <div class="step">
+          <strong>3. Highlight</strong>
+          Takes you to the exact location.
+        </div>
+
+        <div class="step">
+          <strong>4. Review</strong>
+          You check the proposed change.
+        </div>
+
+        <div class="step">
+          <strong>5. Update</strong>
+          You approve the update.
+        </div>
+
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    function findCode() {
+      const instruction = document.getElementById("instruction").value;
+      const status = document.getElementById("status");
+
+      if (instruction.trim() === "") {
+        status.style.display = "block";
+        status.innerHTML = "⚠️ Please paste an AI coding instruction first.";
+        return;
+      }
+
+      status.style.display = "block";
+      status.innerHTML =
+        "🔎 AI Code Updater received your instruction. Code search will be connected in the next stage.";
+    }
+  </script>
 
 </body>
 </html>
