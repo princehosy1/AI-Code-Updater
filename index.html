@@ -296,9 +296,29 @@ Find, understand, review, and safely update your code with AI.
 </main>
 
 <script>
+const API_BASE = "/api";
 
-function findCode() {
+let currentProposal = null;
 
+async function callApi(functionName, data) {
+  const response = await fetch(`${API_BASE}/${functionName}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(data)
+  });
+
+  const result = await response.json();
+
+  if (!response.ok || result.success === false) {
+    throw new Error(result.error || result.message || "API request failed.");
+  }
+
+  return result;
+}
+
+async function findCode() {
   const instruction =
     document.getElementById("instruction").value.trim();
 
@@ -310,43 +330,108 @@ function findCode() {
     return;
   }
 
-  document.getElementById("step1").classList.remove("active");
-  document.getElementById("step2").classList.add("active");
+  try {
+    document.getElementById("step1").classList.remove("active");
+    document.getElementById("step2").classList.add("active");
 
-  setTimeout(function() {
+    const data = await callApi("locateCode", {
+      instruction: instruction,
+      path: "index.html",
+      branch: "main"
+    });
 
     document.getElementById("step2").classList.remove("active");
     document.getElementById("step3").classList.add("active");
 
+    const analysis = data.analysis;
+
+    if (!analysis || !analysis.match) {
+      alert("No matching code was found.");
+      return;
+    }
+
+    currentProposal = {
+      instruction: instruction,
+      path: "index.html",
+      branch: "main",
+      before: analysis.before,
+      after: analysis.after
+    };
+
     result.style.display = "block";
+
+    result.querySelector(".file-box").innerHTML =
+      "<strong>File:</strong> " + analysis.file;
+
+    result.querySelector(".code-box").innerHTML =
+      "<span class='highlight'>" +
+      escapeHtml(analysis.before) +
+      "</span>";
+
+    const proposedBoxes =
+      result.querySelectorAll(".code-box");
+
+    if (proposedBoxes.length > 1) {
+      proposedBoxes[1].textContent =
+        "Before:\n" +
+        analysis.before +
+        "\n\nAfter:\n" +
+        analysis.after;
+    }
 
     result.scrollIntoView({
       behavior: "smooth"
     });
 
-  }, 600);
+  } catch (error) {
+    alert("Unable to connect to AI Code Updater: " + error.message);
+  }
 }
 
-function approveUpdate() {
+async function approveUpdate() {
+  if (!currentProposal) {
+    alert("Please find code first.");
+    return;
+  }
 
   const status =
     document.getElementById("updateStatus");
 
-  document.getElementById("step3").classList.remove("active");
-  document.getElementById("step4").classList.add("active");
+  try {
+    status.innerHTML =
+      "<div class='notice'>⏳ Updating GitHub...</div>";
 
-  status.innerHTML =
-    "<div class='notice'>✅ Update approved in demo mode. Real GitHub code updating will be connected next.</div>";
+    const data = await callApi("approveUpdate", {
+      ...currentProposal,
+      approve: true
+    });
 
-  setTimeout(function() {
+    document.getElementById("step3").classList.remove("active");
+    document.getElementById("step4").classList.add("active");
 
-    document.getElementById("step4").classList.remove("active");
-    document.getElementById("step5").classList.add("active");
+    status.innerHTML =
+      "<div class='notice'>" +
+      "✅ GitHub updated successfully.<br>" +
+      "Commit: " +
+      escapeHtml(data.commitSha || "Created") +
+      "</div>";
 
-  }, 800);
+    setTimeout(function() {
+      document.getElementById("step4").classList.remove("active");
+      document.getElementById("step5").classList.add("active");
+    }, 800);
+
+  } catch (error) {
+    status.innerHTML =
+      "<div class='notice'>" +
+      "❌ Update failed: " +
+      escapeHtml(error.message) +
+      "</div>";
+  }
 }
 
 function cancelUpdate() {
+  currentProposal = null;
 
   document.getElementById("result").style.display = "none";
 
@@ -354,6 +439,15 @@ function cancelUpdate() {
   document.getElementById("step4").classList.remove("active");
   document.getElementById("step5").classList.remove("active");
   document.getElementById("step1").classList.add("active");
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 </script>
